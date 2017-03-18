@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import facebook
 
 from .models import Location
-from .forms import UpdateLocationForm, GetFriendsPositionsForm
+from .forms import UpdateLocationForm, GetFriendsLocationsForm
 
 from pprint import pprint
 
@@ -44,8 +44,8 @@ def update_location(request):
         }, status=400)
 
 @require_GET
-def get_friends_positions(request):
-    form = GetFriendsPositionsForm(request.GET)
+def get_friends_locations(request):
+    form = GetFriendsLocationsForm(request.GET)
     if form.is_valid():
         try:
             graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')

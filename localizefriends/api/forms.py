@@ -10,5 +10,5 @@ class UpdateLocationForm(LocalizeFriendsApiForm):
     lat = forms.DecimalField(min_value=-90, max_value=90, max_digits=8, decimal_places=6)
 
 
-class GetFriendsPositionsForm(LocalizeFriendsApiForm):
+class GetFriendsLocationsForm(LocalizeFriendsApiForm):
     pass
