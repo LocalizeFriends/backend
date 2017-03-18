@@ -1,10 +1,10 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
-from django import forms
 
 import facebook
 
 from .models import Location
+from .forms import UpdateLocationForm
 
 
 def index(request):
@@ -12,13 +12,7 @@ def index(request):
 
 @require_POST
 def update_location(request):
-
-    class LocationForm(forms.Form):
-        fbtoken = forms.CharField()
-        lng = forms.FloatField(min_value=-180, max_value=180)
-        lat = forms.FloatField(min_value=-90, max_value=90)
-
-    location_form = LocationForm(request.POST)
+    location_form = UpdateLocationForm(request.POST)
     if location_form.is_valid():
         try:
             graph = facebook.GraphAPI(access_token=location_form.cleaned_data['fbtoken'], version='2.8')
@@ -38,8 +32,9 @@ def update_location(request):
         return JsonResponse({
             'success': True
         })
-    return JsonResponse({
-        'success': False,
-        'message': 'There were validation errors.',
-        'errors': location_form.errors
-    }, status=400)
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'There were validation errors.',
+            'errors': location_form.errors
+        }, status=400)
