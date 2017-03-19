@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 import facebook
 
-from .models import Location
+from .models import UserLocation
 from .forms import UpdateLocationForm, GetFriendsLocationsForm
 
 from pprint import pprint
@@ -27,7 +27,7 @@ def update_location(request):
                 'message': e.message
             }, status=403)
 
-        location = Location(
+        location = UserLocation(
             user_id = user['id'],
             longitude = form.cleaned_data['lng'],
             latitude = form.cleaned_data['lat'])
@@ -67,7 +67,7 @@ def get_friends_locations(request):
 
         for friend in friends_using_app:
             try:
-                location = Location.objects.filter(user_id=friend['id']).latest('timestamp')
+                location = UserLocation.objects.filter(user_id=friend['id']).latest('timestamp')
                 friend['location'] = {
                     'timestamp_ms': int(location.timestamp.timestamp() * 1000),
                     'longitude': location.longitude,
