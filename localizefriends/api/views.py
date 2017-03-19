@@ -4,15 +4,20 @@ from django.core.exceptions import ObjectDoesNotExist
 
 import facebook
 
-from .models import UserLocation
-from .forms import UpdateLocationForm, GetFriendsLocationsForm
+from .models import UserLocation, MeetupProposal, Invitee
+from .forms import UpdateLocationForm, GetFriendsLocationsForm, CreateMeetupProposalForm
 
 from pprint import pprint
+from datetime import datetime
+import pytz
 
 FB_APP_ID = 1908151672751269
 
 def index(request):
-    return HttpResponse('Hi, this is API.')
+    return JsonResponse({
+        'success': True,
+        'message': 'Hi, this is API.'
+    })
 
 @require_POST
 def update_location(request):
@@ -49,16 +54,7 @@ def get_friends_locations(request):
     if form.is_valid():
         try:
             graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')
-            result = graph.get_object(id=FB_APP_ID, fields='context.fields(friends_using_app)')
-            result = result['context']['friends_using_app']
-            friends_using_app = []
-            while True:
-                friends_using_app.extend(result['data'])
-                next_page = result['paging'].get('next')
-                if not next_page:
-                    break
-                next_page_path = next_page.replace(facebook.FACEBOOK_GRAPH_URL, '')
-                result = graph.request(next_page_path)
+            friends_using_app = get_friends_using_app(graph)
         except facebook.GraphAPIError as e:
             return JsonResponse({
                 'success': False,
@@ -86,3 +82,64 @@ def get_friends_locations(request):
             'message': 'There were validation errors.',
             'errors': form.errors
         }, status=400)
+
+@require_POST
+def create_meetup_proposal(request):
+    form = CreateMeetupProposalForm(request.POST)
+    if form.is_valid():
+        try:
+            graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')
+            user = graph.get_object('me')
+            friends_using_app = get_friends_using_app(graph)
+        except facebook.GraphAPIError as e:
+            return JsonResponse({
+                'success': False,
+                'message': e.message
+            }, status=403)
+
+        friends_using_app_ids = list(map(lambda f: f['id'], friends_using_app))
+        invitees_ids = set(form.cleaned_data['invite'].split(','))
+        for invitee_id in invitees_ids:
+            if invitee_id not in friends_using_app_ids:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'User with id {} is not a friend using app.'.format(invitee_id)
+                }, status=403)
+
+        meetup_proposal = MeetupProposal(
+            organizer_id = user['id'],
+            name = form.cleaned_data['name'],
+            date_time = datetime.fromtimestamp(form.cleaned_data['timestamp_ms'] / 1000, pytz.utc),
+            place_name = form.cleaned_data['place_name'],
+            longitude = form.cleaned_data['lng'],
+            latitude = form.cleaned_data['lat'])
+        meetup_proposal.save()
+        
+        for invitee_id in invitees_ids:
+            invitee = Invitee(
+                user_id=invitee_id,
+                meetup_proposal=meetup_proposal)
+            invitee.save()
+
+        return JsonResponse({
+            'success': True
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'There were validation errors.',
+            'errors': form.errors
+        }, status=400)
+
+def get_friends_using_app(graph):
+    result = graph.get_object(id=FB_APP_ID, fields='context.fields(friends_using_app)')
+    result = result['context']['friends_using_app']
+    friends_using_app = []
+    while True:
+        friends_using_app.extend(result['data'])
+        next_page = result['paging'].get('next')
+        if not next_page:
+            break
+        next_page_path = next_page.replace(facebook.FACEBOOK_GRAPH_URL, '')
+        result = graph.request(next_page_path)
+    return friends_using_app
