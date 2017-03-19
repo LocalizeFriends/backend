@@ -28,12 +28,13 @@ Save current location of user behind `fbtoken`.
 * `message` is present when `success` is `false`.
 * `errors` is present when there were some input validation errors.
 
-
-    {
-       "success": true|false,
-       "message": "Message string.",
-       "errors": { "field_name": ["Error message"] }
-    }
+```
+{
+   "success": true|false,
+   "message": "Message string.",
+   "errors": { "field_name": ["Error message"] }
+}
+```
 
 ### `GET /api/friends_locations`
 
@@ -47,18 +48,18 @@ Get latest locations (if available) of all friends (who also use the app) of use
 * `message` is present when `success` is `false`.
 * `errors` is present when there were some input validation errors.
 
-
-    {
-        "success": true|false,
-        "data": [ { "name": "Contact Name", "id": "fb user id", location: null | {
-            "timestamp_ms": milliseconds from epoch (UTC),
-            "longitude": "DDD.MMMMMM",
-            "latitude": "DD.MMMMMM"
-            }}],
-        "message": "Message string.",
-        "errors": { "field_name": ["Error message"] }
-    }
-
+```
+{
+    "success": true|false,
+    "data": [ { "name": "Contact Name", "id": "fb user id", location: null | {
+        "timestamp_ms": milliseconds from epoch (UTC),
+        "longitude": "DDD.MMMMMM",
+        "latitude": "DD.MMMMMM"
+        }}],
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```
 
 ### `POST /api/meetup_proposal`
 
@@ -77,9 +78,10 @@ Create new meetup proposal with user behind `fbtoken` as organizer.
 * `message` is present when `success` is `false`.
 * `errors` is present when there were some input validation errors.
 
-
-    {
-       "success": true|false,
-       "message": "Message string.",
-       "errors": { "field_name": ["Error message"] }
-    }
+```
+{
+   "success": true|false,
+   "message": "Message string.",
+   "errors": { "field_name": ["Error message"] }
+}
+```
