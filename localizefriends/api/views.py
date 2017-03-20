@@ -110,7 +110,7 @@ def create_meetup_proposal(request):
         meetup_proposal = MeetupProposal(
             organizer_id = user['id'],
             name = form.cleaned_data['name'],
-            date_time = datetime.fromtimestamp(form.cleaned_data['timestamp_ms'] / 1000, pytz.utc),
+            start_time = datetime.fromtimestamp(form.cleaned_data['timestamp_ms'] / 1000, pytz.utc),
             place_name = form.cleaned_data['place_name'],
             longitude = form.cleaned_data['lng'],
             latitude = form.cleaned_data['lat'])
@@ -147,11 +147,11 @@ def get_meetup_proposals(request):
 
         meetups = MeetupProposal.objects.filter(
             Q(organizer_id=user['id']) | Q(invitee__user_id=user['id'])
-        ).order_by('-date_time')
+        ).order_by('-start_time')
 
         return JsonResponse({
             'success': True,
-            'data': [ meetup.to_dict() for meetup in meetups ]
+            'data': [ meetup.to_api_dict() for meetup in meetups ]
         })
     else:
         return JsonResponse({

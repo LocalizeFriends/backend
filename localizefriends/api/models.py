@@ -12,18 +12,18 @@ class MeetupProposal(models.Model):
     organizer_id = models.IntegerField()
     creation_time = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=255)
-    date_time = models.DateTimeField()
+    start_time = models.DateTimeField()
     place_name = models.CharField(max_length=255)
     longitude = models.DecimalField(max_digits=9, decimal_places=6)
     latitude = models.DecimalField(max_digits=8, decimal_places=6)
     cancelled = models.BooleanField(default=False)
 
-    def to_dict(self):
+    def to_api_dict(self):
         return {
             'organizer_id': self.organizer_id,
-            'creation_time': self.creation_time,
+            'creation_timestamp_ms': int(self.creation_time.timestamp() * 1000),
             'name': self.name,
-            'date_time': self.date_time,
+            'start_timestamp_ms': int(self.start_time.timestamp() * 1000),
             'place_name': self.place_name,
             'longitude': self.longitude,
             'latitude': self.latitude,
