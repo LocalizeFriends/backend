@@ -1,11 +1,12 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 import facebook
 
 from .models import UserLocation, MeetupProposal, Invitee
-from .forms import UpdateLocationForm, GetFriendsLocationsForm, CreateMeetupProposalForm
+from .forms import *
 
 from pprint import pprint
 from datetime import datetime
@@ -54,7 +55,7 @@ def get_friends_locations(request):
     if form.is_valid():
         try:
             graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')
-            friends_using_app = get_friends_using_app(graph)
+            friends_using_app = fetch_friends_using_app(graph)
         except facebook.GraphAPIError as e:
             return JsonResponse({
                 'success': False,
@@ -90,7 +91,7 @@ def create_meetup_proposal(request):
         try:
             graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')
             user = graph.get_object('me')
-            friends_using_app = get_friends_using_app(graph)
+            friends_using_app = fetch_friends_using_app(graph)
         except facebook.GraphAPIError as e:
             return JsonResponse({
                 'success': False,
@@ -114,7 +115,7 @@ def create_meetup_proposal(request):
             longitude = form.cleaned_data['lng'],
             latitude = form.cleaned_data['lat'])
         meetup_proposal.save()
-        
+
         for invitee_id in invitees_ids:
             invitee = Invitee(
                 user_id=invitee_id,
@@ -131,7 +132,39 @@ def create_meetup_proposal(request):
             'errors': form.errors
         }, status=400)
 
-def get_friends_using_app(graph):
+@require_GET
+def get_meetup_proposals(request):
+    form = LocalizeFriendsApiForm(request.GET)
+    if form.is_valid():
+        try:
+            graph = facebook.GraphAPI(access_token=form.cleaned_data['fbtoken'], version='2.8')
+            user = graph.get_object('me')
+        except facebook.GraphAPIError as e:
+            return JsonResponse({
+                'success': False,
+                'message': e.message
+            }, status=403)
+
+        meetups = MeetupProposal.objects.filter(
+            Q(organizer_id=user['id']) | Q(invitee__user_id=user['id'])
+        ).order_by('-date_time')
+
+        return JsonResponse({
+            'success': True,
+            'data': [ meetup.to_dict() for meetup in meetups ]
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'message': 'There were validation errors.',
+            'errors': form.errors
+        }, status=400)
+
+# --- views end ---
+
+# helpers:
+
+def fetch_friends_using_app(graph):
     result = graph.get_object(id=FB_APP_ID, fields='context.fields(friends_using_app)')
     result = result['context']['friends_using_app']
     friends_using_app = []

@@ -18,6 +18,25 @@ class MeetupProposal(models.Model):
     latitude = models.DecimalField(max_digits=8, decimal_places=6)
     cancelled = models.BooleanField(default=False)
 
+    def to_dict(self):
+        return {
+            'organizer_id': self.organizer_id,
+            'creation_time': self.creation_time,
+            'name': self.name,
+            'date_time': self.date_time,
+            'place_name': self.place_name,
+            'longitude': self.longitude,
+            'latitude': self.latitude,
+            'cancelled': self.cancelled,
+            'invitees': [
+                {
+                    'id': invitee.user_id,
+                    'accepted': invitee.accepted
+                }
+                for invitee in self.invitee_set.all()
+            ]
+        }
+
 
 class Invitee(models.Model):
     user_id = models.IntegerField(db_index=True)
