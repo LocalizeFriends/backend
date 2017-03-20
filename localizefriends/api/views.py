@@ -169,6 +169,8 @@ def fetch_friends_using_app(graph):
     result = result['context']['friends_using_app']
     friends_using_app = []
     while True:
+        for friend in result['data']:
+            friend['id'] = int(friend['id'])
         friends_using_app.extend(result['data'])
         next_page = result['paging'].get('next')
         if not next_page:
