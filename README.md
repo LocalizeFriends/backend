@@ -7,6 +7,10 @@ Application backend serving a REST API
 ## How to run development server
     source venv/bin/activate && python localizefriends/manage.py runserver
 
+**After each `git pull` one should apply new migrations which could have been made:**
+
+    python localizefriends/manage.py migrate
+
 ## HTTP statuses
 * `200` – operation successful
 * `400` – incorrect/insufficient parameters (see `message` and `errors` in returned)
@@ -51,7 +55,7 @@ Get latest locations (if available) of all friends (who also use the app) of use
 ```
 {
     "success": true|false,
-    "data": [ { "name": "Contact Name", "id": "fb user id", location: null | {
+    "data": [ { "name": "Contact Name", "id": fb user id, location: null | {
         "timestamp_ms": milliseconds from epoch (UTC),
         "longitude": "DDD.MMMMMM",
         "latitude": "DD.MMMMMM"
@@ -80,8 +84,46 @@ Create new meetup proposal with user behind `fbtoken` as organizer.
 
 ```
 {
-   "success": true|false,
-   "message": "Message string.",
-   "errors": { "field_name": ["Error message"] }
+    "success": true|false,
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```
+
+### `GET /api/meetup_proposals`
+
+Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
+
+#### Parameters
+* `fbtoken` – FB API access token
+
+#### Output
+* `data` is present when `success` is `true`.
+* `message` is present when `success` is `false`.
+* `errors` is present when there were some input validation errors.
+
+```
+{
+    "success": true|false,
+    "data": [
+        {
+            "organizer_id": fb user id,
+            "creation_timestamp_ms": milliseconds from epoch (UTC),
+            "name": "name of the meetup",
+            "start_timestamp_ms": milliseconds from epoch (UTC),
+            "place_name": "name of the meeting place",
+            "longitude": "DDD.MMMMMM",
+            "latitude": "DD.MMMMMM"
+            "cancelled": true|false,
+            "invitees": [
+                {
+                    "id": fb user id,
+                    "accepted": true|false
+                }
+            ]
+        }
+    ]
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
 }
 ```
