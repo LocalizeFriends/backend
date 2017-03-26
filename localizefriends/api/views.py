@@ -24,14 +24,17 @@ def index(request):
 @require_POST
 @validate_with_form(UpdateLocationForm)
 def update_location(request, cleaned_data):
-    try:
-        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
-        user = graph.get_object('me')
-    except facebook.GraphAPIError as e:
-        return JsonResponse({
-            'success': False,
-            'message': e.message
-        }, status=403)
+    if 'as_user_id' in request.POST:
+        user = { 'id': request.POST['as_user_id'] }
+    else:
+        try:
+            graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+            user = graph.get_object('me')
+        except facebook.GraphAPIError as e:
+            return JsonResponse({
+                'success': False,
+                'message': e.message
+            }, status=403)
 
     location = UserLocation(
         user_id = user['id'],
