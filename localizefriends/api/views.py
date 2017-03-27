@@ -3,15 +3,15 @@ from django.views.decorators.http import require_POST, require_GET
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-import facebook
-
 from .models import UserLocation, MeetupProposal, Invitee
 from .forms import *
 from .view_decorators import validate_with_form
 
+import facebook
+import pytz
 from pprint import pprint
 from datetime import datetime
-import pytz
+from geodesy import wgs84
 
 FB_APP_ID = 1908151672751269
 
@@ -72,6 +72,44 @@ def get_friends_locations(request, cleaned_data):
     return JsonResponse({
         'success': True,
         'data': friends_using_app
+    })
+
+@require_GET
+@validate_with_form(GetFriendsWithinRangeForm)
+def get_friends_within_range(request, cleaned_data):
+    try:
+        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+        friends_using_app = fetch_friends_using_app(graph)
+    except facebook.GraphAPIError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message
+        }, status=403)
+
+    friends_within_range = []
+
+    for friend in friends_using_app:
+        try:
+            location = UserLocation.objects.filter(user_id=friend['id']).latest('timestamp')
+            friend_lng = location.longitude
+            friend_lat = location.latitude
+            friend_dist = wgs84.distance((cleaned_data['lat'], cleaned_data['lng']),
+                                         (friend_lat, friend_lng))
+            print(friend_dist)
+            if friend_dist < cleaned_data['radius']:
+                friend['distance'] = friend_dist
+                friend['location'] = {
+                    'timestamp_ms': int(location.timestamp.timestamp() * 1000),
+                    'longitude': friend_lng,
+                    'latitude':  friend_lat
+                }
+                friends_within_range.append(friend)
+        except ObjectDoesNotExist:
+            pass
+
+    return JsonResponse({
+        'success': True,
+        'data': friends_within_range
     })
 
 @require_POST

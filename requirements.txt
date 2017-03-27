@@ -1,6 +1,9 @@
 appdirs==1.4.3
+Cython==0.25.2
 Django==1.10.6
 -e git+https://github.com/mobolic/facebook-sdk.git@43b609ee034195c794521e23792532471551c383#egg=facebook_sdk
+-e git+https://github.com/hckr/geodesy.git@5f6858625146466c8bdfb661f02a9eda464357af#egg=geodesy
+numpy==1.12.1
 packaging==16.8
 pyparsing==2.2.0
 pytz==2016.10
