@@ -25,8 +25,8 @@ Save current location of user behind `fbtoken`.
 
 #### Parameters
 * `fbtoken` – FB API access token
-* `lng` – longitude in format `(-)DDD.MMMMMM`
-* `lat` – latitude in format `(-)DD.MMMMMM`
+* `lng` – longitude in format `(-)DDD.MMMMMMM`
+* `lat` – latitude in format `(-)DD.MMMMMMM`
 
 #### Output
 * `message` is present when `success` is `false`.
@@ -55,10 +55,42 @@ Get latest locations (if available) of all friends (who also use the app) of use
 ```
 {
     "success": true|false,
-    "data": [ { "name": "Contact Name", "id": fb user id, location: null | {
+    "data": [ { "name": "Contact Name", "id": fb user id, "location": null | {
         "timestamp_ms": milliseconds from epoch (UTC),
-        "longitude": "DDD.MMMMMM",
-        "latitude": "DD.MMMMMM"
+        "longitude": "DDD.MMMMMMM",
+        "latitude": "DD.MMMMMMM"
+        }}],
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```
+
+### `GET /api/friends_within_range`
+
+Get list of all friends (who also use the app) of user behind `fbtoken` who's distance from specified point is lower than `range`.
+
+#### Parameters
+* `fbtoken` – FB API access token
+* `lng` – longitude of range center in format `(-)DDD.MMMMMMM`
+* `lat` – latitude of range center in format `(-)DD.MMMMMMM`
+* `range` – range radius in metres (integer)
+
+#### Output
+* `data` is present when `success` is `true`.
+* `message` is present when `success` is `false`.
+* `errors` is present when there were some input validation errors.
+
+```
+{
+    "success": true|false,
+    "data": [ {
+        "name": "Contact Name",
+        "id": fb user id,
+        "distance": metres from specified point
+        "location": {
+            "timestamp_ms": milliseconds from epoch (UTC),
+            "longitude": "DDD.MMMMMMM",
+            "latitude": "DD.MMMMMMM"
         }}],
     "message": "Message string.",
     "errors": { "field_name": ["Error message"] }
@@ -74,8 +106,8 @@ Create new meetup proposal with user behind `fbtoken` as organizer.
 * `name` – name of the meetup
 * `timestamp_ms` – UTC timestamp in milliseconds representing beginning of a meetup
 * `place_name` – name of the meeting place
-* `lng` – longitude in format `(-)DDD.MMMMMM`
-* `lat` – latitude in format `(-)DD.MMMMMM`
+* `lng` – longitude in format `(-)DDD.MMMMMMM`
+* `lat` – latitude in format `(-)DD.MMMMMMM`
 * `invite` – comma separated list of Facebook user ids of friends to invite (who also use the app)
 
 #### Output
@@ -112,8 +144,8 @@ Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
             "name": "name of the meetup",
             "start_timestamp_ms": milliseconds from epoch (UTC),
             "place_name": "name of the meeting place",
-            "longitude": "DDD.MMMMMM",
-            "latitude": "DD.MMMMMM"
+            "longitude": "DDD.MMMMMMM",
+            "latitude": "DD.MMMMMMM"
             "cancelled": true|false,
             "invitees": [
                 {
