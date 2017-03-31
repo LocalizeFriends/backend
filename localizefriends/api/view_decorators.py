@@ -11,7 +11,7 @@ def validate_with_form(form_class):
                 raise NotImplementedError()
             form = form_class(data)
             if form.is_valid():
-                return view(request, form.cleaned_data, *args, *kwargs)
+                return view(request, form.cleaned_data, *args, **kwargs)
             else:
                 return JsonResponse({
                     'success': False,
