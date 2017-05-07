@@ -1,0 +1,39 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+body {
+    margin: 20px;
+}
+
+dl {
+    overflow: hidden;
+}
+
+dt, dd {
+    float: left;
+}
+
+dt {
+    clear: both;
+}
+
+dt::after {
+    content: ':';
+    padding-right: 3px;
+}
+
+h1 {
+    margin: 20px;
+}
+
+h2 {
+    margin: 25px 15px 15px;
+}
+
+div {
+    margin: 10px 0;
+    max-width: 500px;
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="markers.xsl"?>
+<markers>
+
+    <marker id="1" name="Kino Nowe Horyzonty" lat="51.109463" lng="17.026126">
+        <description>Największy w Polsce multipleks prezentujący kino artystyczne. Działalność Kina Nowe Horyzonty jest częścią programu Europejskiej Stolicy Kultury Wrocław.</description>
+    </marker>
+
+    <marker id="2" name="Pręgierz" lat="51.1094600496649" lng="17.032676339149475">
+        <description>Charakterystyczne miejsce spotkań. Kopia zabytkowego pręgierza pochodzącego z 1492 roku zlokalizowana na rynku we Wrocławiu.  </description>
+    </marker>
+
+    <marker id="3" name="Galeria Dominikańska" lat="51.108349" lng="17.040428">
+        <description>Galeria Dominikańska – centrum handlowe zlokalizowane pomiędzy Placem Dominikańskim oraz ulicami: bł. Czesława i Oławską, w centralnej części Wrocławia, niedaleko Rynku. Galeria z dużą ilośćią sklepów i restauracji</description>
+    </marker>
+
+    <marker id="4" name="Panorama Racławicka" lat="51.110137" lng="17.044322">
+        <description>Muzeum sztuki we Wrocławiu. Jedno z niewielu miejsc na świecie, gdzie podziwiać można relikt dziewiętnastowiecznej kultury masowej.</description>
+    </marker>
+
+    <marker id="5" name="Most Grunwaldzki" lat="51.10949" lng="17.052562">
+        <description>Most wiszący przez rzekę Odrę o konstrukcji stalowej, nitowanej; elementy nośne wsparte są na pylonach murowanych z cegły i oblicowanych granitem, o wysokości około 20 m.</description>
+    </marker>
+
+    <marker id="6" name="Politechnika Wrocławska" lat="51.108682" lng="17.060137">
+        <description>Państwowa szkoła wyższa we Wrocławiu, uważana za jedną z najlepszych uczelni technicznych w Polsce.</description>
+    </marker>
+
+    <marker id="7" name="Park Stanisława Tołpy" lat="51.120455" lng="17.053936">
+        <description>Park Stanisława Tołpy, Waschteich Park, to niewielki park we Wrocławiu położony w całości na osiedlu Ołbin, w dzielnicy Śródmieście.</description>
+    </marker>
+
+    <marker id="8" name="Park Szczytnicki" lat="51.116266" lng="17.078183">
+        <description>Park Szczytnicki – jeden z największych parków Wrocławia zajmujący powierzchnię około 100 hektarów. Położony jest na wschód od Starej Odry, na terenie dawnej wsi Szczytniki, włączonej w obręb miasta w 1868 roku.</description>
+    </marker>
+
+    <marker id="9" name="Hala Stulecia" lat="51.106877" lng="17.077281">
+        <description>Hala Stulecia, daw. Hala Ludowa – hala widowiskowo-sportowa znajdująca się we Wrocławiu, w dzielnicy Śródmieście, na osiedlu Zalesie, w parku Szczytnickim. Wzniesiona w latach 1911–1913 według projektu Maxa Berga, w stylu ekspresjonistycznym. </description>
+    </marker>
+
+    <marker id="10" name="ZOO Wrocław" lat="51.104128" lng="17.074192">
+        <description>Ogród Zoologiczny we Wrocławiu – ogród zoologiczny znajdujący się przy ul. Wróblewskiego 1–5 we Wrocławiu, otwarty 10 lipca 1865. Jest najstarszym na obecnych ziemiach polskich ogrodem zoologicznym w Polsce. Powierzchnia ogrodu to 33 hektary.</description>
+    </marker>
+
+    <marker id="11" name="Wyspa Przygody Opatowicka" lat="51.100706" lng="17.11818">
+        <description>Wyspa Przygody Opatowicka to przede wszystkim aktywny wypoczynek. Park linowy został zaprojektowany i wybudowany tak, aby idealnie wpasował się w przyrodę Wyspy Opatowickiej.</description>
+    </marker>
+
+    <marker id="12" name="Plac Jana Pawała II " lat="51.111845" lng="17.020333">
+        <description>Plac Jana Pawła II – obszerny plac w ścisłym centrum Wrocławia, powstały krótko po zdobyciu miasta przez wojska napoleońskie w 1807 i zburzeniu wkrótce potem – na rozkaz zwycięzców – fortyfikacji miejskich.</description>
+    </marker>
+
+    <marker id="13" name="Opera Wrocławska" lat="51.105698" lng="17.030611">
+        <description>Gmach Teatru Miejskiego wzniesiono przy ulicy Świdnickiej w latach 1839–1841 według projektu Carla Ferdinanda Langhansa, z nowoczesną sceną i widownią na około 1600 miejsc.</description>
+    </marker>
+
+    <marker id="14" name="Dworzec Główny PKP" lat="51.098772" lng="17.036512">
+        <description>Wrocław Główny – największa z osobowych stacji kolejowych we Wrocławiu, zlokalizowana na osiedlu Huby. Jeden z nielicznych w Polsce dworców kolejowych, który ma halę peronową. </description>
+    </marker>
+
+    <marker id="15" name="Arkady Wrocławskie" lat="51.0989" lng="17.02913">
+        <description>Arkady Wrocławskie – kompleks handlowo-biurowo-usługowy z parkingiem wielopoziomowym oraz Multikinem, wybudowany w centrum Wrocławia.</description>
+    </marker>
+
+</markers>
