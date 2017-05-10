@@ -42,3 +42,9 @@ class Invitee(models.Model):
     user_id = models.IntegerField(db_index=True)
     meetup_proposal = models.ForeignKey(MeetupProposal, on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)
+
+
+class UserCloudMessagingAddress(models.Model):
+    user_id = models.IntegerField(db_index=True)
+    address = models.CharField(max_length=255) # bigger than needed for now
+    expiration_time = models.DateTimeField()

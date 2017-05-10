@@ -3,7 +3,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-from .models import UserLocation, MeetupProposal, Invitee
+from .models import UserLocation, MeetupProposal, Invitee, UserCloudMessagingAddress
 from .forms import *
 from .view_decorators import validate_with_form
 
@@ -172,6 +172,28 @@ def get_meetup_proposals(request, cleaned_data):
     return JsonResponse({
         'success': True,
         'data': [ meetup.to_api_dict() for meetup in meetups ]
+    })
+
+@require_POST
+@validate_with_form(SaveCloudMessagingAddress)
+def save_cloud_messaging_address(request, cleaned_data):
+    try:
+        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+        user = graph.get_object('me')
+    except facebook.GraphAPIError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message
+        }, status=403)
+
+    user_address = UserCloudMessagingAddress(
+        user_id = user['id'],
+        address = cleaned_data['address'],
+        expiration_time = datetime.fromtimestamp(cleaned_data['expiration_time_ms'] / 1000, pytz.utc))
+    user_address.save()
+
+    return JsonResponse({
+        'success': True
     })
 
 # --- views end ---

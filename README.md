@@ -159,3 +159,50 @@ Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
     "errors": { "field_name": ["Error message"] }
 }
 ```
+
+
+### `POST /api/meetup_proposal`
+
+Create new meetup proposal with user behind `fbtoken` as organizer.
+
+#### Parameters
+* `fbtoken` – FB API access token
+* `name` – name of the meetup
+* `timestamp_ms` – UTC timestamp in milliseconds representing beginning of a meetup
+* `place_name` – name of the meeting place
+* `lng` – longitude in format `(-)DDD.MMMMMMM`
+* `lat` – latitude in format `(-)DD.MMMMMMM`
+* `invite` – comma separated list of Facebook user ids of friends to invite (who also use the app)
+
+#### Output
+* `message` is present when `success` is `false`.
+* `errors` is present when there were some input validation errors.
+
+```
+{
+    "success": true|false,
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```
+
+### `POST /api/cloud_messaging_address`
+
+Save new FCM address of the user app to send notifications to.
+
+#### Parameters
+* `fbtoken` – FB API access token of the app user
+* `address` – FCM address
+* `expiration_time_ms` – UTC timestamp in milliseconds representing the expiration time of the address
+
+#### Output
+* `message` is present when `success` is `false`.
+* `errors` is present when there were some input validation errors.
+
+```
+{
+    "success": true|false,
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```

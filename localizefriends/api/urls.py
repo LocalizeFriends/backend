@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^meetup_proposal$', views.create_meetup_proposal, name='create_meetup_proposal'),
     url(r'^meetup_proposals$', views.get_meetup_proposals, name='get_meetup_proposals'),
     url(r'^friends_within_range$', views.get_friends_within_range, name='get_friends_within_range'),
+    url(r'^cloud_messaging_address$', views.save_cloud_messaging_address, name='save_cloud_messaging_address'),
     url(r'^$', views.index, name='index'),
 ]
