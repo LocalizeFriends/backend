@@ -9,11 +9,14 @@ from .view_decorators import validate_with_form
 
 import facebook
 import pytz
+import requests
+import json
 from pprint import pprint
 from datetime import datetime
 from geodesy import wgs84
 
 FB_APP_ID = 1908151672751269
+FCM_AUTH_KEY = 'AAAAzZSlrBo:APA91bG_XUO5t1s5J-k3NxP08jec0dSxSJAylGSD4DGRTA9pUs99mxHgiZT2DSTUixOTPliMPaTS_92z83jiEYXlcPHv4w0-PfiAFAMHZqVtyfz0IiutBO-Ian5lAY7JOnw1eBX4iRTm'
 
 def index(request):
     return JsonResponse({
@@ -126,9 +129,9 @@ def create_meetup_proposal(request, cleaned_data):
         }, status=403)
 
     friends_using_app_ids = list(map(lambda f: f['id'], friends_using_app))
-    invitees_ids = set(cleaned_data['invite'].split(','))
+    invitees_ids = [ int(user_id) for user_id in set(cleaned_data['invite'].split(',')) ]
     for invitee_id in invitees_ids:
-        if int(invitee_id) not in friends_using_app_ids:
+        if invitee_id not in friends_using_app_ids:
             return JsonResponse({
                 'success': False,
                 'message': 'User with id {} is not a friend using app.'.format(invitee_id)
@@ -148,6 +151,12 @@ def create_meetup_proposal(request, cleaned_data):
             user_id=invitee_id,
             meetup_proposal=meetup_proposal)
         invitee.save()
+
+    send_fcm_message(invitees_ids, {
+        'type': 'meetup_proposal_invitation_received',
+        'meetup_id': int(meetup_proposal.id),
+        'organizer_id': user['id']
+    })
 
     return JsonResponse({
         'success': True
@@ -171,13 +180,26 @@ def accept_meetup_proposal(request, cleaned_data, meetup_id):
             Q(user_id=user['id']),
             Q(meetup_proposal__id=meetup_id)
         )
-        invitee.accepted = bool(cleaned_data['value'])
-        invitee.save()
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
             'message': 'Meetup proposal was not found or the status cannot be changed by the current user.'
         }, status=404)
+
+    invitee.accepted = bool(cleaned_data['value'])
+    invitee.save()
+    recipients_ids = [ user['user_id'] for user
+                       in Invitee.objects.filter(
+                           ~Q(user_id=user['id']),
+                           Q(meetup_proposal__id=meetup_id)
+                       ).values('user_id') ]
+    recipients_ids.append(MeetupProposal.objects.get(pk=meetup_id).organizer_id)
+    send_fcm_message(recipients_ids, {
+        'type': 'meetup_proposal_invitation_change',
+        'meetup_id': int(meetup_id),
+        'user_id': user['id'],
+        'new_status': invitee.accepted
+    })
 
     return JsonResponse({
         'success': True
@@ -203,6 +225,14 @@ def cancel_meetup_proposal(request, cleaned_data, meetup_id):
         )
         meetup_proposal.cancelled = bool(cleaned_data['value'])
         meetup_proposal.save()
+        recipients_ids = [ user['user_id'] for user
+                         in meetup_proposal.invitee_set.values('user_id') ]
+        send_fcm_message(recipients_ids, {
+            'type': 'meetup_proposal_cancel_change',
+            'meetup_id': int(meetup_id),
+            'user_id': user['id'],
+            'new_status': meetup_proposal.cancelled
+        })
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -302,3 +332,19 @@ def fetch_friends_using_app(graph):
         next_page_path = next_page.replace(facebook.FACEBOOK_GRAPH_URL, '')
         result = graph.request(next_page_path)
     return friends_using_app
+
+def send_fcm_message(user_ids, msg):
+    for user_id in user_ids:
+        receiver = UserCloudMessagingAddress.objects.filter(
+            Q(user_id=user_id),
+            Q(expiration_time__gt=datetime.now(tz=pytz.utc))
+        ).order_by('-expiration_time').first()
+        if receiver:
+            receiver_addr = receiver.address
+            post_data = json.dumps({
+                'to': receiver_addr,
+                'data': msg
+            })
+            pprint(post_data)
+            headers = { 'Authorization': 'key={}'.format(FCM_AUTH_KEY) }
+            requests.post('https://fcm.googleapis.com/fcm/send', data=post_data, headers=headers)

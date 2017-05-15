@@ -258,3 +258,51 @@ Save new FCM address of the user app to send notifications to.
     "errors": { "field_name": ["Error message"] }
 }
 ```
+
+## FCM messages
+
+Messages are sent the following way:
+
+```
+{
+    "to": FCM address,
+    "data": actual message as listed below
+}
+```
+
+### Invitation received
+
+Sent to each user which was invited to a meetup.
+
+```
+{
+    "type": "meetup_proposal_invitation_received",
+    "meetup_id": meetup_id,
+    "organizer_id": organizer_id
+}
+```
+
+### Invitation status change
+
+Sent to organizer and each user invited to a meetup for which invitation status of any user changed.
+
+```
+{
+    "type": "meetup_proposal_invitation_change",
+    "meetup_id": meetup_id,
+    "user_id": user who changed status,
+    "new_status": true|false
+}
+```
+
+### Meetup proposal cancelation status change
+
+Sent to each user invited to a meetup which changed.
+
+```
+{
+    'type': 'meetup_proposal_cancel_change',
+    'meetup_id': meetup_id,
+    "new_status": true|false
+}
+```
