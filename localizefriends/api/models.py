@@ -20,6 +20,7 @@ class MeetupProposal(models.Model):
 
     def to_api_dict(self):
         return {
+            'id': self.id,
             'organizer_id': self.organizer_id,
             'creation_timestamp_ms': int(self.creation_time.timestamp() * 1000),
             'name': self.name,

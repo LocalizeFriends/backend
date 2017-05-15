@@ -128,7 +128,7 @@ def create_meetup_proposal(request, cleaned_data):
     friends_using_app_ids = list(map(lambda f: f['id'], friends_using_app))
     invitees_ids = set(cleaned_data['invite'].split(','))
     for invitee_id in invitees_ids:
-        if invitee_id not in friends_using_app_ids:
+        if int(invitee_id) not in friends_using_app_ids:
             return JsonResponse({
                 'success': False,
                 'message': 'User with id {} is not a friend using app.'.format(invitee_id)
@@ -148,6 +148,66 @@ def create_meetup_proposal(request, cleaned_data):
             user_id=invitee_id,
             meetup_proposal=meetup_proposal)
         invitee.save()
+
+    return JsonResponse({
+        'success': True
+    })
+
+@require_POST
+@validate_with_form(ChangeMeetupProposalStatusValueForm)
+def accept_meetup_proposal(request, cleaned_data, meetup_id):
+    try:
+        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+        user = graph.get_object('me')
+        friends_using_app = fetch_friends_using_app(graph)
+    except facebook.GraphAPIError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message
+        }, status=403)
+
+    try:
+        invitee = Invitee.objects.get(
+            Q(user_id=user['id']),
+            Q(meetup_proposal__id=meetup_id)
+        )
+        invitee.accepted = bool(cleaned_data['value'])
+        invitee.save()
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Meetup proposal was not found or the status cannot be changed by the current user.'
+        }, status=404)
+
+    return JsonResponse({
+        'success': True
+    })
+
+@require_POST
+@validate_with_form(ChangeMeetupProposalStatusValueForm)
+def cancel_meetup_proposal(request, cleaned_data, meetup_id):
+    try:
+        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+        user = graph.get_object('me')
+        friends_using_app = fetch_friends_using_app(graph)
+    except facebook.GraphAPIError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message
+        }, status=403)
+
+    try:
+        meetup_proposal = MeetupProposal.objects.get(
+            Q(id=meetup_id),
+            Q(organizer_id=user['id'])
+        )
+        meetup_proposal.cancelled = bool(cleaned_data['value'])
+        meetup_proposal.save()
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Meetup proposal was not found or the status cannot be changed by the current user.'
+        }, status=404)
 
     return JsonResponse({
         'success': True
@@ -175,7 +235,7 @@ def get_meetup_proposals(request, cleaned_data):
     })
 
 @require_POST
-@validate_with_form(SaveCloudMessagingAddress)
+@validate_with_form(SaveCloudMessagingAddressForm)
 def save_cloud_messaging_address(request, cleaned_data):
     try:
         graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')

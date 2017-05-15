@@ -29,6 +29,10 @@ class CreateMeetupProposalForm(LocalizeFriendsApiForm, CoordinatesApiForm):
     invite = forms.CharField(validators=[validate_comma_separated_integer_list])
 
 
-class SaveCloudMessagingAddress(LocalizeFriendsApiForm):
+class SaveCloudMessagingAddressForm(LocalizeFriendsApiForm):
     address = forms.CharField(min_length=50, max_length=255)
     expiration_time_ms = forms.IntegerField()
+
+
+class ChangeMeetupProposalStatusValueForm(LocalizeFriendsApiForm):
+    value = forms.IntegerField(min_value=0, max_value=1)
