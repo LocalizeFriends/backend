@@ -122,9 +122,46 @@ Create new meetup proposal with user behind `fbtoken` as organizer.
 }
 ```
 
+### `GET /api/meetup_proposal/{meetup_id}`
+
+Get meetup proposal with `meetup_id` if user behind `fbtoken` is an organizer or invitee.
+
+#### Parameters
+* `fbtoken` – FB API access token
+
+#### Output
+* `data` is present when `success` is `true`.
+* `message` is present when `success` is `false`.
+* `errors` is present when there were some input validation errors.
+
+```
+{
+    "success": true|false,
+    "data": {
+        "id": meetup proposal's id
+        "organizer_id": fb user id,
+        "creation_timestamp_ms": milliseconds from epoch (UTC),
+        "name": "name of the meetup",
+        "start_timestamp_ms": milliseconds from epoch (UTC),
+        "place_name": "name of the meeting place",
+        "longitude": "DDD.MMMMMMM",
+        "latitude": "DD.MMMMMMM"
+        "cancelled": true|false,
+        "invitees": [
+            {
+                "id": fb user id,
+                "accepted": true|false
+            }
+        ]
+    },
+    "message": "Message string.",
+    "errors": { "field_name": ["Error message"] }
+}
+```
+
 ### `GET /api/meetup_proposals`
 
-Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
+Get list of meetup proposals with user behind `fbtoken` as an organizer or invitee.
 
 #### Parameters
 * `fbtoken` – FB API access token
@@ -139,7 +176,7 @@ Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
     "success": true|false,
     "data": [
         {
-            "id": meetup's id
+            "id": meetup proposals's id
             "organizer_id": fb user id,
             "creation_timestamp_ms": milliseconds from epoch (UTC),
             "name": "name of the meetup",
@@ -161,33 +198,6 @@ Get list of meetup proposals with user behind `fbtoken` as organizer or invitee.
 }
 ```
 
-
-### `POST /api/meetup_proposal`
-
-Create new meetup proposal with user behind `fbtoken` as organizer.
-
-#### Parameters
-* `fbtoken` – FB API access token
-* `name` – name of the meetup
-* `timestamp_ms` – UTC timestamp in milliseconds representing beginning of a meetup
-* `place_name` – name of the meeting place
-* `lng` – longitude in format `(-)DDD.MMMMMMM`
-* `lat` – latitude in format `(-)DD.MMMMMMM`
-* `invite` – comma separated list of Facebook user ids of friends to invite (who also use the app)
-
-#### Output
-* `message` is present when `success` is `false`.
-* `errors` is present when there were some input validation errors.
-
-```
-{
-    "success": true|false,
-    "message": "Message string.",
-    "errors": { "field_name": ["Error message"] }
-}
-```
-
-
 ### `POST /api/meetup_proposal/{meetup_id}/accept`
 
 Change acceptation flag for meetup with `meetup_id` to which user behind `fbtoken` was invited.
@@ -207,7 +217,6 @@ Change acceptation flag for meetup with `meetup_id` to which user behind `fbtoke
     "errors": { "field_name": ["Error message"] }
 }
 ```
-
 
 ### `POST /api/meetup_proposal/{meetup_id}/cancel`
 

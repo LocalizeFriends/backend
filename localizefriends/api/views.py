@@ -215,6 +215,34 @@ def cancel_meetup_proposal(request, cleaned_data, meetup_id):
 
 @require_GET
 @validate_with_form(LocalizeFriendsApiForm)
+def get_meetup_proposal(request, cleaned_data, meetup_id):
+    try:
+        graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
+        user = graph.get_object('me')
+    except facebook.GraphAPIError as e:
+        return JsonResponse({
+            'success': False,
+            'message': e.message
+        }, status=403)
+
+    try:
+        meetup = MeetupProposal.objects.get(
+            Q(organizer_id=user['id']) | Q(invitee__user_id=user['id']),
+            pk=meetup_id
+        )
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'Meetup proposal was not found or cannot be accessed by the current user.'
+        }, status=404)
+
+    return JsonResponse({
+        'success': True,
+        'data': meetup.to_api_dict()
+    })
+
+@require_GET
+@validate_with_form(LocalizeFriendsApiForm)
 def get_meetup_proposals(request, cleaned_data):
     try:
         graph = facebook.GraphAPI(access_token=cleaned_data['fbtoken'], version='2.8')
