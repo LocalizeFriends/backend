@@ -345,6 +345,8 @@ def send_fcm_message(user_ids, msg):
                 'to': receiver_addr,
                 'data': msg
             })
-            pprint(post_data)
-            headers = { 'Authorization': 'key={}'.format(FCM_AUTH_KEY) }
+            headers = {
+                'Content-type': 'application/json',
+                'Authorization': 'key={}'.format(FCM_AUTH_KEY)
+            }
             requests.post('https://fcm.googleapis.com/fcm/send', data=post_data, headers=headers)
