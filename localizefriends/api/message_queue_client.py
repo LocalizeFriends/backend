@@ -3,7 +3,7 @@ import zmq
 def send_fcm_message(fcm_ids, message):
     context = zmq.Context()
     socket = context.socket(zmq.PUSH)
-    socket.connect("tcp://localhost:5555")
+    socket.connect("tcp://localhost:5678")
     socket.send_json({
         'operation': 'send_fcm_message',
         'arguments': {
