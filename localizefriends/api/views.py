@@ -6,17 +6,16 @@ from django.db.models import Q
 from .models import UserLocation, MeetupProposal, Invitee, UserCloudMessagingAddress
 from .forms import *
 from .view_decorators import validate_with_form
+from . import message_queue_client
 
 import facebook
 import pytz
-import requests
 import json
 from pprint import pprint
 from datetime import datetime
 from geodesy import wgs84
 
 FB_APP_ID = 1908151672751269
-FCM_AUTH_KEY = 'AAAAzZSlrBo:APA91bG_XUO5t1s5J-k3NxP08jec0dSxSJAylGSD4DGRTA9pUs99mxHgiZT2DSTUixOTPliMPaTS_92z83jiEYXlcPHv4w0-PfiAFAMHZqVtyfz0IiutBO-Ian5lAY7JOnw1eBX4iRTm'
 
 def index(request):
     return JsonResponse({
@@ -334,19 +333,16 @@ def fetch_friends_using_app(graph):
     return friends_using_app
 
 def send_fcm_message(user_ids, msg):
+    print(user_ids)
+    receiver_addrs = []
     for user_id in user_ids:
         receiver = UserCloudMessagingAddress.objects.filter(
             Q(user_id=user_id),
             Q(expiration_time__gt=datetime.now(tz=pytz.utc))
         ).order_by('-expiration_time').first()
+        print(receiver)
         if receiver:
-            receiver_addr = receiver.address
-            post_data = json.dumps({
-                'to': receiver_addr,
-                'data': msg
-            })
-            headers = {
-                'Content-type': 'application/json',
-                'Authorization': 'key={}'.format(FCM_AUTH_KEY)
-            }
-            requests.post('https://fcm.googleapis.com/fcm/send', data=post_data, headers=headers)
+            print(receiver.address)
+            receiver_addrs.append(receiver.address)
+    if len(receiver_addrs) > 0:
+        message_queue_client.send_fcm_message(receiver_addrs, msg)
