@@ -73,7 +73,7 @@ Get list of all friends (who also use the app) of user behind `fbtoken` who's di
 * `fbtoken` – FB API access token
 * `lng` – longitude of range center in format `(-)DDD.MMMMMMM`
 * `lat` – latitude of range center in format `(-)DD.MMMMMMM`
-* `range` – range radius in metres (integer)
+* `radius` – range radius in metres (integer)
 
 #### Output
 * `data` is present when `success` is `true`.
