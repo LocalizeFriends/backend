@@ -1,5 +1,7 @@
 from django.db import models
 
+from .compat import timestamp_ms
+
 
 class UserLocation(models.Model):
     user_id = models.IntegerField(db_index=True)
@@ -22,9 +24,9 @@ class MeetupProposal(models.Model):
         return {
             'id': self.id,
             'organizer_id': self.organizer_id,
-            'creation_timestamp_ms': int(self.creation_time.timestamp() * 1000),
+            'creation_timestamp_ms': timestamp_ms(self.creation_time),
             'name': self.name,
-            'start_timestamp_ms': int(self.start_time.timestamp() * 1000),
+            'start_timestamp_ms': timestamp_ms(self.start_time),
             'place_name': self.place_name,
             'longitude': self.longitude,
             'latitude': self.latitude,

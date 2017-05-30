@@ -7,6 +7,7 @@ from .models import UserLocation, MeetupProposal, Invitee, UserCloudMessagingAdd
 from .forms import *
 from .view_decorators import validate_with_form
 from . import message_queue_client
+from .compat import timestamp_ms
 
 import facebook
 import pytz
@@ -15,7 +16,9 @@ from pprint import pprint
 from datetime import datetime
 from geodesy import wgs84
 
+
 FB_APP_ID = 1908151672751269
+
 
 def index(request):
     return JsonResponse({
@@ -64,7 +67,7 @@ def get_friends_locations(request, cleaned_data):
         try:
             location = UserLocation.objects.filter(user_id=friend['id']).latest('timestamp')
             friend['location'] = {
-                'timestamp_ms': int(location.timestamp.timestamp() * 1000),
+                'timestamp_ms': timestamp_ms(location.timestamp),
                 'longitude': location.longitude,
                 'latitude':  location.latitude
             }
@@ -101,7 +104,7 @@ def get_friends_within_range(request, cleaned_data):
             if friend_dist < cleaned_data['radius']:
                 friend['distance'] = friend_dist
                 friend['location'] = {
-                    'timestamp_ms': int(location.timestamp.timestamp() * 1000),
+                    'timestamp_ms': timestamp_ms(location.timestamp),
                     'longitude': friend_lng,
                     'latitude':  friend_lat
                 }
