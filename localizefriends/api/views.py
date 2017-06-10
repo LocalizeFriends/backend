@@ -6,7 +6,7 @@ from django.db.models import Q
 from .models import UserLocation, MeetupProposal, Invitee, UserCloudMessagingAddress
 from .forms import *
 from .view_decorators import validate_with_form
-from . import message_queue_client
+from . import esb_client
 from .compat import timestamp_ms
 
 import facebook
@@ -348,4 +348,4 @@ def send_fcm_message(user_ids, msg):
             print(receiver.address)
             receiver_addrs.append(receiver.address)
     if len(receiver_addrs) > 0:
-        message_queue_client.send_fcm_message(receiver_addrs, msg)
+        esb_client.send_fcm_message(receiver_addrs, msg)

@@ -261,7 +261,7 @@ Save new FCM address of the user app to send notifications to.
 
 ## FCM messages
 
-**In order for FCM messages to work, [message_queue](https://github.com/LocalizeFriends/message_queue) should be running on the same server.**
+**In order for FCM messages to work, [esb](https://github.com/LocalizeFriends/esb) should be running at address specified in [esb_client.py](localizefriends/api/esb_client.py) and [message_queue](https://github.com/LocalizeFriends/message_queue) should be running on the same server.**
 
 Messages are sent the following way:
 

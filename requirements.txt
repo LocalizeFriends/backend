@@ -2,13 +2,12 @@ appdirs==1.4.3
 Cython==0.25.2
 Django==1.10.6
 -e git+https://github.com/mobolic/facebook-sdk.git@43b609ee034195c794521e23792532471551c383#egg=facebook_sdk
--e git+https://github.com/xoolive/geodesy@a9d85183185527eced42736c9febeac3d8a996bf#egg=geodesy
 gunicorn==19.7.1
 numpy==1.12.1
+-e git+https://github.com/xoolive/geodesy@a9d85183185527eced42736c9febeac3d8a996bf#egg=geodesy
 packaging==16.8
 pyparsing==2.2.0
 pytz==2016.10
 pyzmq==16.0.2
 requests==2.13.0
 six==1.10.0
-zmq==0.0.0
